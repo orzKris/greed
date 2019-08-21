@@ -1,0 +1,11 @@
+# Excel Size
+excelSize: 100
+
+# File Path
+filePath: /home/excel/
+
+# Request Url
+url: http://localhost:8888
+
+logging:
+  config: classpath:log4j2-dev.xml
