@@ -1,7 +1,7 @@
 <Configuration status="error" monitorInterval="1800">
     <Properties>
         <property name="path">logs</property>
-        <property name="application">prophecy</property>
+        <property name="application">greed</property>
     </Properties>
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
