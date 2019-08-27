@@ -1,20 +1,22 @@
-package com.kris.greed.dump;
+package com.kris.greed.service;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSONPath;
+import com.kris.greed.config.CommonConfig;
+import com.kris.greed.enums.ServiceIdEnum;
+import com.kris.greed.feign.ProphecyService;
 import lombok.extern.log4j.Log4j2;
-import okhttp3.*;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -28,16 +30,13 @@ import java.util.concurrent.*;
  */
 @Log4j2
 @Component
-public class DumpData {
+public class DataDevelopService {
 
-    @Value("${excelSize}")
-    private Integer excelSize;
+    @Autowired
+    private CommonConfig commonConfig;
 
-    @Value("${filePath}")
-    private String filePath;
-
-    @Value("${url}")
-    private String url;
+    @Autowired
+    private ProphecyService prophecyService;
 
     private static ExecutorService threadPool = Executors.newFixedThreadPool(200);
 
@@ -47,24 +46,24 @@ public class DumpData {
         String requestTime = dateFormat.format(new Date());
         List<Future> futureList = new ArrayList<>();
         HSSFWorkbook workbook = new HSSFWorkbook();
-        HSSFSheet sheet = workbook.createSheet("手机号运营商");
+        HSSFSheet sheet = workbook.createSheet("调用量统计");
         HSSFRow beginRow = sheet.createRow(0);
         HSSFCell beginCell0 = beginRow.createCell(0);
         HSSFCell beginCell1 = beginRow.createCell(1);
-        beginCell0.setCellValue("手机号");
-        beginCell1.setCellValue("运营商");
+        beginCell0.setCellValue("接口编号");
+        beginCell1.setCellValue("调用量");
         int index = 1;
-        for (int i = 0; i <= excelSize; i++) {
+        for (int i = 0; i <= commonConfig.getDataDevelopment().getExcelSize(); i++) {
             HSSFRow row = sheet.createRow(index);
             HSSFCell cell = row.createCell(0);
-            cell.setCellValue((long) (Math.random() * 10000000000L) + 10000000000L + "");
+            cell.setCellValue(getInterfaceId(i));
             index = index + 1;
         }
         for (int i = 1; i <= sheet.getLastRowNum(); i++) {
             HSSFRow row = sheet.getRow(i);
-            String mobile = row.getCell(0).getStringCellValue();
+            String interfaceId = row.getCell(0).getStringCellValue();
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("mobile", mobile);
+            jsonObject.put("interfaceId", interfaceId);
             MyCallable callable = new MyCallable(jsonObject);
             futureList.add(threadPool.submit(callable));
         }
@@ -78,22 +77,29 @@ public class DumpData {
                 e.printStackTrace();
             }
 
-            String operator;
-            try {
-                operator = result.substring(result.indexOf("carrier:'"), result.indexOf("'\\n}"));
-                operator = operator.substring(9);
-            } catch (Exception e) {
-                operator = "空号";
-            }
-            sheet.getRow(i).getCell(1, Row.CREATE_NULL_AS_BLANK).setCellValue(operator);
-            log.info("{} : {}", sheet.getRow(i).getCell(0).getStringCellValue(), operator);
+            JSONObject resultJson = JSON.parseObject(result);
+            int count = (int) JSONPath.eval(resultJson, "$.result.jsonResult.count");
+            sheet.getRow(i).getCell(1, Row.CREATE_NULL_AS_BLANK).setCellValue(count);
+            log.info("{} : {}", sheet.getRow(i).getCell(0).getStringCellValue(), count);
             i = i + 1;
         }
-        FileOutputStream fileOutputStream = new FileOutputStream(filePath + "手机号运营商" + requestTime + ".xls");
+        FileOutputStream fileOutputStream = new FileOutputStream(commonConfig.getFilePath() + "prophecy调用量统计" + requestTime + ".xls");
         workbook.write(fileOutputStream);
         fileOutputStream.flush();
         fileOutputStream.close();
         log.info("cost: {} ms", (System.currentTimeMillis() - start));
+    }
+
+    private String getInterfaceId(Integer i) {
+        if (i >= 0 && i < 10) {
+            return "D00" + i;
+        } else if (i < 100) {
+            return "D0" + i;
+        } else if (i < 1000) {
+            return "D" + i;
+        } else {
+            throw new RuntimeException("interfaceId out of range");
+        }
     }
 
     class MyCallable implements Callable<String> {
@@ -105,18 +111,8 @@ public class DumpData {
         }
 
         @Override
-        public String call() throws IOException {
-            Request request = getRequest(param);
-            Call call = new OkHttpClient.Builder().callTimeout(10000, TimeUnit.MILLISECONDS).build().newCall(request);
-            Response response = call.execute();
-            return response.body().string();
+        public String call() {
+            return prophecyService.call(ServiceIdEnum.D000.getId(), param.toJSONString());
         }
-    }
-
-    private Request getRequest(JSONObject param) throws UnsupportedEncodingException {
-        return new Request.Builder()
-                .url(url + "/concurrent/D005?param=" + URLEncoder.encode(param.toJSONString(), "UTF-8"))
-                .post(new FormBody.Builder().build())
-                .build();
     }
 }

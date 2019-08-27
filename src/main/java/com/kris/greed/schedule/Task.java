@@ -1,6 +1,6 @@
 package com.kris.greed.schedule;
 
-import com.kris.greed.dump.DumpData;
+import com.kris.greed.service.MobileOperatorService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -17,11 +17,11 @@ import java.io.IOException;
 public class Task {
 
     @Autowired
-    private DumpData dumpData;
+    private MobileOperatorService mobileOperatorService;
 
     @Scheduled(cron = "0 0 12 * * ?")
     private void scheduledTask() throws IOException {
         log.info("SCHEDULED TASK BEGIN----------");
-        dumpData.dump();
+        mobileOperatorService.dump();
     }
 }

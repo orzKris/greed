@@ -1,6 +1,28 @@
 spring:
+  cloud:
+    consul:
+      discovery:
+        ##检测实例健康
+        health-check-path: /actuator/health
+        ##每隔10s检查
+        health-check-interval: 10s
+        ##自动注册
+        register: true
+        ##实例名称
+        service-name: ${spring.application.name}
+        heartbeat:
+          enabled: true
+      #consul地址
+      host: 127.0.0.1
+      port: 8500
+      config:
+        enabled: true
+        ##配置中心解析样式
+        format: yaml
   profiles:
     active: dev
+  application:
+    name: greed
 server:
   port: 8889
 
