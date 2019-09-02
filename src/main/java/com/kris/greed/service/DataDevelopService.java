@@ -4,8 +4,11 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONPath;
 import com.kris.greed.config.CommonConfig;
+import com.kris.greed.enums.ServiceCode;
 import com.kris.greed.enums.ServiceIdEnum;
 import com.kris.greed.feign.ProphecyService;
+import com.kris.greed.model.DumpService;
+import com.kris.greed.model.ProphecyCaller;
 import lombok.extern.log4j.Log4j2;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -29,14 +32,11 @@ import java.util.concurrent.*;
  * @date 2019/08/20
  */
 @Log4j2
-@Component
-public class DataDevelopService {
+@Component(ServiceCode.DATA_DUMP)
+public class DataDevelopService implements DumpService {
 
     @Autowired
     private CommonConfig commonConfig;
-
-    @Autowired
-    private ProphecyService prophecyService;
 
     private static ExecutorService threadPool = Executors.newFixedThreadPool(200);
 
@@ -64,7 +64,7 @@ public class DataDevelopService {
             String interfaceId = row.getCell(0).getStringCellValue();
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("interfaceId", interfaceId);
-            MyCallable callable = new MyCallable(jsonObject);
+            ProphecyCaller callable = new ProphecyCaller(jsonObject, ServiceIdEnum.D000);
             futureList.add(threadPool.submit(callable));
         }
 
@@ -102,17 +102,4 @@ public class DataDevelopService {
         }
     }
 
-    class MyCallable implements Callable<String> {
-
-        private JSONObject param;
-
-        MyCallable(JSONObject param) {
-            this.param = param;
-        }
-
-        @Override
-        public String call() {
-            return prophecyService.call(ServiceIdEnum.D000.getId(), param.toJSONString());
-        }
-    }
 }
