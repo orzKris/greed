@@ -38,6 +38,9 @@ public class DataDevelopService implements DumpService {
     @Autowired
     private CommonConfig commonConfig;
 
+    @Autowired
+    private ProphecyService prophecyService;
+
     private static ExecutorService threadPool = Executors.newFixedThreadPool(200);
 
     public void dump() throws IOException {
@@ -53,7 +56,7 @@ public class DataDevelopService implements DumpService {
         beginCell0.setCellValue("接口编号");
         beginCell1.setCellValue("调用量");
         int index = 1;
-        for (int i = 0; i <= commonConfig.getDataDevelopment().getExcelSize(); i++) {
+        for (int i = 1; i <= commonConfig.getDataDevelopment().getExcelSize(); i++) {
             HSSFRow row = sheet.createRow(index);
             HSSFCell cell = row.createCell(0);
             cell.setCellValue(getInterfaceId(i));
@@ -64,7 +67,7 @@ public class DataDevelopService implements DumpService {
             String interfaceId = row.getCell(0).getStringCellValue();
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("interfaceId", interfaceId);
-            ProphecyCaller callable = new ProphecyCaller(jsonObject, ServiceIdEnum.D000);
+            ProphecyCaller callable = new ProphecyCaller(jsonObject, ServiceIdEnum.D000, prophecyService);
             futureList.add(threadPool.submit(callable));
         }
 

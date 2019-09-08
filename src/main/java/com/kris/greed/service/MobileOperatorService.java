@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.kris.greed.config.CommonConfig;
 import com.kris.greed.enums.ServiceCode;
 import com.kris.greed.enums.ServiceIdEnum;
+import com.kris.greed.feign.ProphecyService;
 import com.kris.greed.model.DumpService;
 import com.kris.greed.model.ProphecyCaller;
 import lombok.extern.log4j.Log4j2;
@@ -35,6 +36,9 @@ public class MobileOperatorService implements DumpService {
     @Autowired
     private CommonConfig commonConfig;
 
+    @Autowired
+    private ProphecyService prophecyService;
+
     private static ExecutorService threadPool = Executors.newFixedThreadPool(200);
 
     public void dump() throws IOException {
@@ -61,7 +65,7 @@ public class MobileOperatorService implements DumpService {
             String mobile = row.getCell(0).getStringCellValue();
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("mobile", mobile);
-            ProphecyCaller callable = new ProphecyCaller(jsonObject, ServiceIdEnum.D005);
+            ProphecyCaller callable = new ProphecyCaller(jsonObject, ServiceIdEnum.D005, prophecyService);
             futureList.add(threadPool.submit(callable));
         }
 
