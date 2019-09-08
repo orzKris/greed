@@ -8,6 +8,7 @@ import com.kris.greed.config.CommonConfig;
 import com.kris.greed.enums.ServiceCode;
 import com.kris.greed.enums.ServiceIdEnum;
 import com.kris.greed.feign.ProphecyService;
+import com.kris.greed.model.DumpService;
 import com.kris.greed.model.ProphecyCaller;
 import lombok.extern.log4j.Log4j2;
 import org.apache.poi.hssf.usermodel.HSSFCell;
@@ -36,7 +37,7 @@ import java.util.concurrent.Future;
  */
 @Log4j2
 @Component(ServiceCode.GDP)
-public class DomesticProductService {
+public class DomesticProductService implements DumpService {
 
     @Autowired
     private CommonConfig commonConfig;
@@ -61,7 +62,7 @@ public class DomesticProductService {
         beginCell1.setCellValue("地区");
         beginCell2.setCellValue("生产总值(亿元)");
         int index = 1;
-        for (int i = 0; i <= districtList.size(); i++) {
+        for (int i = 0; i < districtList.size(); i++) {
             HSSFRow row = sheet.createRow(index);
             HSSFCell cell = row.createCell(0);
             cell.setCellValue(commonConfig.getDomesticProduct().getYear());
@@ -71,10 +72,10 @@ public class DomesticProductService {
         }
         for (int i = 1; i <= sheet.getLastRowNum(); i++) {
             HSSFRow row = sheet.getRow(i);
-            String year = row.getCell(0).getStringCellValue();
+            int year = (int) row.getCell(0).getNumericCellValue();
             String district = row.getCell(1).getStringCellValue();
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("year", year);
+            jsonObject.put("year", year + "");
             jsonObject.put("area", district);
             ProphecyCaller callable = new ProphecyCaller(jsonObject, ServiceIdEnum.D006, prophecyService);
             futureList.add(threadPool.submit(callable));
@@ -94,13 +95,13 @@ public class DomesticProductService {
             JSONArray array = (JSONArray) JSONPath.eval(resultJson, "$.result.jsonResult.result");
             for (int j = 0; j < array.size(); j++) {
                 JSONObject json = array.getJSONObject(j);
-                if ("国内生产总值(亿元)".equals(json.get("zb"))) {
+                if ("国内生产总值(亿元)".equals(json.get("zb")) || "地区生产总值(亿元)".equals(json.get("zb"))) {
                     product = (String) json.get("data");
                     break;
                 }
             }
             sheet.getRow(i).getCell(2, Row.CREATE_NULL_AS_BLANK).setCellValue(product);
-            log.info("{} {} : {}", sheet.getRow(i).getCell(0).getStringCellValue(),
+            log.info("{} {} : {}", (int) sheet.getRow(i).getCell(0).getNumericCellValue(),
                     sheet.getRow(i).getCell(1).getStringCellValue(), product);
             i = i + 1;
         }
@@ -113,7 +114,7 @@ public class DomesticProductService {
     }
 
     private static List<String> districtList = Arrays.asList("河北", "山西", "内蒙古自治区", "黑龙江", "吉林", "辽宁",
-            "陕西", "甘肃", "青海", "新疆维吾尔自治", "宁夏回族自治区", "山东", "河南", "江苏", "浙江", "安徽", "江西",
-            "福建", "湖北", "湖南", "广东", "广西壮族自治区", "海南", "四川", "云南", "贵州", "西藏自治区",
+            "陕西", "甘肃", "青海", "新疆维吾尔自治区", "宁夏回族自治区", "山东", "河南", "江苏", "浙江", "安徽", "江西",
+            "福建", "湖北", "湖南", "广东", "广西", "海南", "四川", "云南", "贵州", "西藏自治区",
             "北京", "上海", "天津", "重庆");
 }
