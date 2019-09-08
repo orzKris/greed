@@ -13,4 +13,5 @@ com:
         excelSize: 100
       dataDevelopment:
         excelSize: 6
-
+      domesticProduct:
+        year: 2017

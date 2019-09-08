@@ -1,4 +1,4 @@
-package com.kris.greed.config;
+package com.kris.greed.config.interfaceConfig;
 
 import lombok.Data;
 

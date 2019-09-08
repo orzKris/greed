@@ -1,5 +1,8 @@
 package com.kris.greed.config;
 
+import com.kris.greed.config.interfaceConfig.DataDevelopment;
+import com.kris.greed.config.interfaceConfig.DomesticProduct;
+import com.kris.greed.config.interfaceConfig.MobileOperator;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -20,5 +23,7 @@ public class CommonConfig {
     private DataDevelopment dataDevelopment;
 
     private MobileOperator mobileOperator;
+
+    private DomesticProduct domesticProduct;
 
 }

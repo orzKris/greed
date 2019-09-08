@@ -27,4 +27,6 @@ public class ServiceCode {
 
     public static final String DATA_DUMP = "大数据输出";
 
+    public static final String GDP = "地区生产总值";
+
 }
