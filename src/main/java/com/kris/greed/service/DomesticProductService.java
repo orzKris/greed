@@ -47,6 +47,7 @@ public class DomesticProductService implements DumpService {
 
     private static ExecutorService threadPool = Executors.newFixedThreadPool(200);
 
+    @Override
     public void dump() throws IOException {
         long start = System.currentTimeMillis();
         DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
@@ -61,14 +62,12 @@ public class DomesticProductService implements DumpService {
         beginCell0.setCellValue("年份");
         beginCell1.setCellValue("地区");
         beginCell2.setCellValue("生产总值(亿元)");
-        int index = 1;
         for (int i = 0; i < districtList.size(); i++) {
-            HSSFRow row = sheet.createRow(index);
+            HSSFRow row = sheet.createRow(i + 1);
             HSSFCell cell = row.createCell(0);
             cell.setCellValue(commonConfig.getDomesticProduct().getYear());
             HSSFCell cell1 = row.createCell(1);
             cell1.setCellValue(districtList.get(i));
-            index = index + 1;
         }
         for (int i = 1; i <= sheet.getLastRowNum(); i++) {
             HSSFRow row = sheet.getRow(i);
@@ -111,6 +110,11 @@ public class DomesticProductService implements DumpService {
         fileOutputStream.flush();
         fileOutputStream.close();
         log.info("cost: {} ms", (System.currentTimeMillis() - start));
+    }
+
+    @Override
+    public String dealQueryResult(JSONObject resultJson) {
+        return null;
     }
 
     private static List<String> districtList = Arrays.asList("河北", "山西", "内蒙古自治区", "黑龙江", "吉林", "辽宁",

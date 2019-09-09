@@ -1,6 +1,7 @@
 package com.kris.greed.excel;
 
 import com.kris.greed.enums.ServiceIdEnum;
+import com.kris.greed.model.DumpService;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 import java.io.IOException;
@@ -13,7 +14,6 @@ import java.util.List;
  */
 public interface ExcelService {
 
-    HSSFWorkbook request(ServiceIdEnum serviceIdEnum, String sheetName, List<String> columnList, LinkedHashMap<String, List<String>> paramMap);
+    void excel(ServiceIdEnum serviceIdEnum, String sheetName, List<String> columnList, LinkedHashMap<String, List<String>> paramMap, DumpService dumpService, String fileName) throws IOException;
 
-    void excel(HSSFWorkbook hssfWorkbook, String fileName) throws IOException;
 }

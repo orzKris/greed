@@ -1,10 +1,12 @@
 package com.kris.greed.excel.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.kris.greed.config.CommonConfig;
 import com.kris.greed.enums.ServiceIdEnum;
 import com.kris.greed.excel.ExcelService;
 import com.kris.greed.feign.ProphecyService;
+import com.kris.greed.model.DumpService;
 import com.kris.greed.model.ProphecyCaller;
 import lombok.extern.log4j.Log4j2;
 import org.apache.poi.hssf.usermodel.HSSFCell;
@@ -32,8 +34,6 @@ import java.util.concurrent.Future;
 @Component
 public class ExcelServiceImpl implements ExcelService {
 
-    private long startTime;
-
     @Autowired
     private CommonConfig commonConfig;
 
@@ -43,8 +43,8 @@ public class ExcelServiceImpl implements ExcelService {
     private static ExecutorService threadPool = Executors.newFixedThreadPool(200);
 
     @Override
-    public HSSFWorkbook request(ServiceIdEnum serviceIdEnum, String sheetName, List<String> columnList, LinkedHashMap<String, List<String>> paramMap) {
-        startTime = System.currentTimeMillis();
+    public void excel(ServiceIdEnum serviceIdEnum, String sheetName, List<String> columnList, LinkedHashMap<String, List<String>> paramMap, DumpService dumpService, String fileName) throws IOException {
+        long startTime = System.currentTimeMillis();
         List<Future> futureList = new ArrayList<>();
         HSSFWorkbook workbook = new HSSFWorkbook();
         HSSFSheet sheet = workbook.createSheet(sheetName);
@@ -71,7 +71,7 @@ public class ExcelServiceImpl implements ExcelService {
             JSONObject paramJson = new JSONObject();
             int j = 0;
             for (Map.Entry<String, List<String>> entry : paramMap.entrySet()) {
-                paramJson.put(entry.getKey(), row.getCell(j));
+                paramJson.put(entry.getKey(), row.getCell(j).getStringCellValue());
                 j = j + 1;
             }
             ProphecyCaller callable = new ProphecyCaller(paramJson, serviceIdEnum, prophecyService);
@@ -86,20 +86,31 @@ public class ExcelServiceImpl implements ExcelService {
             } catch (Exception e) {
                 log.error("thread pool task error", e);
             }
-            sheet.getRow(i).getCell(columnList.size() - 1, Row.CREATE_NULL_AS_BLANK).setCellValue(result);
+            JSONObject resultJson = JSON.parseObject(result);
+            String finalResult = dumpService.dealQueryResult(resultJson);
+            HSSFRow row = sheet.getRow(i);
+            row.getCell(columnList.size() - 1, Row.CREATE_NULL_AS_BLANK).setCellValue(finalResult);
+            setLog(row, finalResult, columnList.size() - 1);
             i = i + 1;
         }
-        return workbook;
+        toFile(workbook, fileName);
+        log.info("cost: {} ms", (System.currentTimeMillis() - startTime));
     }
 
-    @Override
-    public void excel(HSSFWorkbook hssfWorkbook, String fileName) throws IOException {
+    private void setLog(HSSFRow row, String finalResult, int size) {
+        StringBuilder logString = new StringBuilder();
+        for (int i = 0; i < size; i++) {
+            logString.append(row.getCell(i).getStringCellValue());
+        }
+        log.info("{} : {}", logString.toString(), finalResult);
+    }
+
+    private void toFile(HSSFWorkbook hssfWorkbook, String fileName) throws IOException {
         DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
         String requestTime = dateFormat.format(new Date());
         FileOutputStream fileOutputStream = new FileOutputStream(commonConfig.getFilePath() + fileName + requestTime + ".xls");
         hssfWorkbook.write(fileOutputStream);
         fileOutputStream.flush();
         fileOutputStream.close();
-        log.info("cost: {} ms", (System.currentTimeMillis() - startTime));
     }
 }

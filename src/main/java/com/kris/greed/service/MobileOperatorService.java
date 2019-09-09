@@ -41,6 +41,7 @@ public class MobileOperatorService implements DumpService {
 
     private static ExecutorService threadPool = Executors.newFixedThreadPool(200);
 
+    @Override
     public void dump() throws IOException {
         long start = System.currentTimeMillis();
         DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
@@ -53,12 +54,10 @@ public class MobileOperatorService implements DumpService {
         HSSFCell beginCell1 = beginRow.createCell(1);
         beginCell0.setCellValue("手机号");
         beginCell1.setCellValue("运营商");
-        int index = 1;
-        for (int i = 0; i <= commonConfig.getMobileOperator().getExcelSize(); i++) {
-            HSSFRow row = sheet.createRow(index);
+        for (int i = 0; i < commonConfig.getMobileOperator().getExcelSize(); i++) {
+            HSSFRow row = sheet.createRow(i + 1);
             HSSFCell cell = row.createCell(0);
             cell.setCellValue((long) (Math.random() * 10000000000L) + 10000000000L + "");
-            index = index + 1;
         }
         for (int i = 1; i <= sheet.getLastRowNum(); i++) {
             HSSFRow row = sheet.getRow(i);
@@ -96,4 +95,8 @@ public class MobileOperatorService implements DumpService {
         log.info("cost: {} ms", (System.currentTimeMillis() - start));
     }
 
+    @Override
+    public String dealQueryResult(JSONObject resultJson) {
+        return null;
+    }
 }

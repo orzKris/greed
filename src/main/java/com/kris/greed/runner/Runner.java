@@ -29,12 +29,17 @@ public class Runner implements ApplicationRunner {
     private ApplicationContextRegister applicationContextRegister;
 
     @Override
-    public void run(ApplicationArguments args) throws Exception {
+    public void run(ApplicationArguments args) {
         Map<String, String> serviceMap = callMap.getMap();
         for (Map.Entry<String, String> entry : serviceMap.entrySet()) {
             DumpService dumpService = (DumpService) applicationContextRegister.getApplicationContext()
                     .getBean(entry.getValue());
-            dumpService.dump();
+            log.info("[SERVICE]: " + entry.getValue());
+            try {
+                dumpService.dump();
+            } catch (Exception e) {
+                log.error(entry.getValue() + "服务调用失败", e);
+            }
         }
     }
 

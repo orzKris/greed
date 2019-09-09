@@ -1,5 +1,7 @@
 package com.kris.greed.model;
 
+import com.alibaba.fastjson.JSONObject;
+
 import java.io.IOException;
 
 /**
@@ -9,4 +11,12 @@ import java.io.IOException;
 public interface DumpService {
 
     void dump() throws IOException;
+
+    /**
+     * callback method
+     *
+     * @param resultJson prophecy response
+     * @return finalResult
+     */
+    String dealQueryResult(JSONObject resultJson);
 }
