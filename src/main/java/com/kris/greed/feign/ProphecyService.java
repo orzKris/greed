@@ -14,5 +14,5 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface ProphecyService {
 
     @PostMapping(value = "concurrent/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    String call(@PathVariable("id") String id, @RequestParam("param") String param);
+    String call(@PathVariable("id") String id, @RequestParam("request") String param);
 }
