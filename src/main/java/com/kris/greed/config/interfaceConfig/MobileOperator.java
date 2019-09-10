@@ -5,5 +5,9 @@ import lombok.Data;
 @Data
 public class MobileOperator {
 
+    private String fileName;
+
+    private String sheetName;
+
     private Integer excelSize;
 }

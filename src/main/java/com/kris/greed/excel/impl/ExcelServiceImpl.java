@@ -3,10 +3,9 @@ package com.kris.greed.excel.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.kris.greed.config.CommonConfig;
-import com.kris.greed.enums.ServiceIdEnum;
 import com.kris.greed.excel.ExcelService;
 import com.kris.greed.feign.ProphecyService;
-import com.kris.greed.model.DumpService;
+import com.kris.greed.model.ExcelParamBean;
 import com.kris.greed.model.ProphecyCaller;
 import lombok.extern.log4j.Log4j2;
 import org.apache.poi.hssf.usermodel.HSSFCell;
@@ -40,15 +39,20 @@ public class ExcelServiceImpl implements ExcelService {
     @Autowired
     private ProphecyService prophecyService;
 
+    /**
+     * CompletionService can't be used here,because you should keep the results in order
+     */
     private static ExecutorService threadPool = Executors.newFixedThreadPool(200);
 
     @Override
-    public void excel(ServiceIdEnum serviceIdEnum, String sheetName, List<String> columnList, LinkedHashMap<String, List<String>> paramMap, DumpService dumpService, String fileName) throws IOException {
+    public void excel(ExcelParamBean excelParamBean) throws IOException {
         long startTime = System.currentTimeMillis();
         List<Future> futureList = new ArrayList<>();
         HSSFWorkbook workbook = new HSSFWorkbook();
-        HSSFSheet sheet = workbook.createSheet(sheetName);
+        HSSFSheet sheet = workbook.createSheet(excelParamBean.getSheetName());
         HSSFRow beginRow = sheet.createRow(0);
+        List<String> columnList = excelParamBean.getColumnList();
+        LinkedHashMap<String, List<String>> paramMap = excelParamBean.getParamMap();
         //第一行属性名称,顺序从左到右
         for (int i = 0; i < columnList.size(); i++) {
             HSSFCell cell = beginRow.createCell(i);
@@ -74,7 +78,7 @@ public class ExcelServiceImpl implements ExcelService {
                 paramJson.put(entry.getKey(), row.getCell(j).getStringCellValue());
                 j = j + 1;
             }
-            ProphecyCaller callable = new ProphecyCaller(paramJson, serviceIdEnum, prophecyService);
+            ProphecyCaller callable = new ProphecyCaller(paramJson, excelParamBean.getServiceIdEnum(), prophecyService);
             futureList.add(threadPool.submit(callable));
         }
         //写入结果
@@ -87,13 +91,13 @@ public class ExcelServiceImpl implements ExcelService {
                 log.error("thread pool task error", e);
             }
             JSONObject resultJson = JSON.parseObject(result);
-            String finalResult = dumpService.dealQueryResult(resultJson);
+            String finalResult = excelParamBean.getDumpService().dealQueryResult(resultJson);
             HSSFRow row = sheet.getRow(i);
             row.getCell(columnList.size() - 1, Row.CREATE_NULL_AS_BLANK).setCellValue(finalResult);
             setLog(row, finalResult, columnList.size() - 1);
             i = i + 1;
         }
-        toFile(workbook, fileName);
+        toFile(workbook, excelParamBean.getFileName());
         log.info("cost: {} ms", (System.currentTimeMillis() - startTime));
     }
 

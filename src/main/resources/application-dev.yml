@@ -10,10 +10,14 @@ com:
       url: http://localhost:8888
 
       mobileOperator:
+        fileName: 手机号运营商
+        sheetName: 手机号运营商
         excelSize: 100
       dataDevelopment:
         fileName: prophecy调用量统计
         sheetName: 调用量统计
         excelSize: 6
       domesticProduct:
+        fileName: 全国各地区生产总值
+        sheetName: 地区生产总值
         year: 2017

@@ -5,5 +5,9 @@ import lombok.Data;
 @Data
 public class DomesticProduct {
 
+    private String fileName;
+
+    private String sheetName;
+
     private Integer year;
 }

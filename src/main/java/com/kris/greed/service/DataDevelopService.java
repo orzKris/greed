@@ -3,10 +3,12 @@ package com.kris.greed.service;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONPath;
 import com.kris.greed.config.CommonConfig;
+import com.kris.greed.constant.DataDevelopConstant;
 import com.kris.greed.enums.ServiceCode;
 import com.kris.greed.enums.ServiceIdEnum;
 import com.kris.greed.excel.ExcelService;
 import com.kris.greed.model.DumpService;
+import com.kris.greed.model.ExcelParamBean;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -33,15 +35,23 @@ public class DataDevelopService implements DumpService {
     @Override
     public void dump() throws IOException {
         List<String> columnList = new ArrayList<>();
-        columnList.add("接口编号");
-        columnList.add("调用量");
+        columnList.add(DataDevelopConstant.INTERFACE_COLUMN);
+        columnList.add(DataDevelopConstant.INVOCATION_VOLUME);
         LinkedHashMap<String, List<String>> paramMap = new LinkedHashMap<>();
         List<String> paramList = new ArrayList<>();
         for (int i = 1; i <= commonConfig.getDataDevelopment().getExcelSize(); i++) {
             paramList.add(getInterfaceId(i));
         }
-        paramMap.put("interfaceId", paramList);
-        excelService.excel(ServiceIdEnum.D000, commonConfig.getDataDevelopment().getSheetName(), columnList, paramMap, this, commonConfig.getDataDevelopment().getFileName());
+        paramMap.put(DataDevelopConstant.INTERFACE_ID, paramList);
+        ExcelParamBean excelParamBean = ExcelParamBean.builder()
+                .sheetName(commonConfig.getDataDevelopment().getSheetName())
+                .fileName(commonConfig.getDataDevelopment().getFileName())
+                .serviceIdEnum(ServiceIdEnum.D000)
+                .columnList(columnList)
+                .paramMap(paramMap)
+                .dumpService(this)
+                .build();
+        excelService.excel(excelParamBean);
     }
 
     @Override
