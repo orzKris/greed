@@ -63,7 +63,12 @@ public class ExcelServiceImpl implements ExcelService {
         for (Map.Entry<String, List<String>> entry : paramMap.entrySet()) {
             List<String> paramList = entry.getValue();
             for (int i = 1; i <= paramList.size(); i++) {
-                HSSFRow row = sheet.createRow(i);
+                HSSFRow row;
+                if (index == 0) {
+                    row = sheet.createRow(i);
+                } else {
+                    row = sheet.getRow(i);
+                }
                 HSSFCell cell = row.createCell(index);
                 cell.setCellValue(paramList.get(i - 1));
             }
