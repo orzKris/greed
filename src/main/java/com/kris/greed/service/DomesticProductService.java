@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONPath;
 import com.kris.greed.config.CommonConfig;
-import com.kris.greed.constant.DomesticProductConstant;
+import com.kris.greed.constant.NationalDataConstant;
 import com.kris.greed.enums.ServiceCode;
 import com.kris.greed.enums.ServiceIdEnum;
 import com.kris.greed.excel.ExcelService;
@@ -34,17 +34,15 @@ public class DomesticProductService implements DumpService {
     @Override
     public void dump() throws IOException {
         List<String> columnList = new ArrayList<>();
-        columnList.add(DomesticProductConstant.YEAR_COLUMN);
-        columnList.add(DomesticProductConstant.AREA_COLUMN);
-        columnList.add(DomesticProductConstant.DOMESTIC_PRODUCT);
+        columnList.add(NationalDataConstant.YEAR_AREA_COLUMN);
+        columnList.add(NationalDataConstant.DOMESTIC_PRODUCT);
         LinkedHashMap<String, List<String>> paramMap = new LinkedHashMap<>();
         String year = commonConfig.getDomesticProduct().getYear() + "";
-        List<String> yearList = new ArrayList<>();
-        for (int i = 1; i <= DomesticProductConstant.districtList.size(); i++) {
-            yearList.add(year);
+        List<String> paramList = new ArrayList<>();
+        for (int i = 0; i < NationalDataConstant.districtList.size(); i++) {
+            paramList.add(year + NationalDataConstant.districtList.get(i) + NationalDataConstant.SEARCH_PHRASE_1);
         }
-        paramMap.put(DomesticProductConstant.YEAR, yearList);
-        paramMap.put(DomesticProductConstant.AREA, DomesticProductConstant.districtList);
+        paramMap.put(NationalDataConstant.KEY, paramList);
         ExcelParamBean excelParamBean = ExcelParamBean.builder()
                 .fileName(commonConfig.getDomesticProduct().getYear() + commonConfig.getDomesticProduct().getFileName())
                 .sheetName(commonConfig.getDomesticProduct().getSheetName())
@@ -62,9 +60,9 @@ public class DomesticProductService implements DumpService {
         JSONArray array = (JSONArray) JSONPath.eval(resultJson, "$.result.jsonResult.result");
         for (int j = 0; j < array.size(); j++) {
             JSONObject json = array.getJSONObject(j);
-            if (DomesticProductConstant.DATASOURCE_VALUE_1.equals(json.get(DomesticProductConstant.DATASOURCE_KEY_1))
-                    || DomesticProductConstant.DATASOURCE_VALUE_2.equals(json.get(DomesticProductConstant.DATASOURCE_KEY_1))) {
-                product = (String) json.get(DomesticProductConstant.DATASOURCE_KEY_2);
+            if (NationalDataConstant.DATASOURCE_VALUE_1.equals(json.get(NationalDataConstant.DATASOURCE_KEY_1))
+                    || NationalDataConstant.DATASOURCE_VALUE_2.equals(json.get(NationalDataConstant.DATASOURCE_KEY_1))) {
+                product = (String) json.get(NationalDataConstant.DATASOURCE_KEY_2);
                 break;
             }
         }

@@ -3,17 +3,15 @@ package com.kris.greed.constant;
 import java.util.Arrays;
 import java.util.List;
 
-public final class DomesticProductConstant {
+public final class NationalDataConstant {
 
-    public static final String YEAR_COLUMN = "年份";
-
-    public static final String AREA_COLUMN = "地区";
+    public static final String YEAR_AREA_COLUMN = "年份地区";
 
     public static final String DOMESTIC_PRODUCT = "生产总值(亿元)";
 
-    public static final String YEAR = "year";
+    public static final String KEY = "key";
 
-    public static final String AREA = "area";
+    public static final String SEARCH_PHRASE_1 = "地区生产总值";
 
     public static final String DATASOURCE_VALUE_1 = "国内生产总值(亿元)";
 
