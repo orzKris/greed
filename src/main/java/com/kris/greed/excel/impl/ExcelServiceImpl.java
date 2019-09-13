@@ -101,7 +101,7 @@ public class ExcelServiceImpl implements ExcelService {
             for (int m = 0; m < finalResultList.size(); m++) {
                 row.getCell(columnList.size() - finalResultList.size() + m, Row.CREATE_NULL_AS_BLANK).setCellValue(finalResultList.get(m));
             }
-            setLog(row, finalResultList, columnList.size() - 1);
+            setLog(row, finalResultList, columnList.size() - finalResultList.size());
             i = i + 1;
         }
         toFile(workbook, excelParamBean.getFileName());
