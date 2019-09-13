@@ -1,6 +1,8 @@
 package com.kris.greed.service;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSONPath;
 import com.kris.greed.config.CommonConfig;
 import com.kris.greed.constant.NationalDataConstant;
 import com.kris.greed.enums.ServiceCode;
@@ -36,6 +38,8 @@ public class NationalPopulationService implements DumpService {
         List<String> columnList = new ArrayList<>();
         columnList.add(NationalDataConstant.YEAR_AREA_COLUMN);
         columnList.add(NationalDataConstant.NATIONAL_POPULATION);
+        columnList.add(NationalDataConstant.PERCENTAGE_OF_BIRTH);
+        columnList.add(NationalDataConstant.PERCENTAGE_OF_DEATH);
         LinkedHashMap<String, List<String>> paramMap = new LinkedHashMap<>();
         String year = commonConfig.getNationalPopulation().getYear() + "";
         List<String> paramList = new ArrayList<>();
@@ -56,6 +60,29 @@ public class NationalPopulationService implements DumpService {
 
     @Override
     public List<String> dealQueryResult(JSONObject resultJson) {
-        return null;
+        List<String> resultList = new ArrayList<>();
+        JSONArray array = (JSONArray) JSONPath.eval(resultJson, "$.result.jsonResult.result");
+        for (int j = 0; j < array.size(); j++) {
+            JSONObject json = array.getJSONObject(j);
+            if (NationalDataConstant.NATIONAL_POPULATION.equals(json.get(NationalDataConstant.DATASOURCE_KEY_1))) {
+                resultList.add((String) json.get(NationalDataConstant.DATASOURCE_KEY_2));
+                break;
+            }
+        }
+        for (int j = 0; j < array.size(); j++) {
+            JSONObject json = array.getJSONObject(j);
+            if (NationalDataConstant.PERCENTAGE_OF_BIRTH.equals(json.get(NationalDataConstant.DATASOURCE_KEY_1))) {
+                resultList.add((String) json.get(NationalDataConstant.DATASOURCE_KEY_2));
+                break;
+            }
+        }
+        for (int j = 0; j < array.size(); j++) {
+            JSONObject json = array.getJSONObject(j);
+            if (NationalDataConstant.PERCENTAGE_OF_DEATH.equals(json.get(NationalDataConstant.DATASOURCE_KEY_1))) {
+                resultList.add((String) json.get(NationalDataConstant.DATASOURCE_KEY_2));
+                break;
+            }
+        }
+        return resultList;
     }
 }

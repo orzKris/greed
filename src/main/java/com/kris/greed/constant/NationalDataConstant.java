@@ -9,7 +9,7 @@ public final class NationalDataConstant {
 
     public static final String DOMESTIC_PRODUCT = "生产总值(亿元)";
 
-    public static final String NATIONAL_POPULATION = "人口";
+    public static final String NATIONAL_POPULATION = "年末常住人口(万人)";
 
     public static final String KEY = "key";
 
@@ -20,6 +20,10 @@ public final class NationalDataConstant {
     public static final String DATASOURCE_VALUE_1 = "国内生产总值(亿元)";
 
     public static final String DATASOURCE_VALUE_2 = "地区生产总值(亿元)";
+
+    public static final String PERCENTAGE_OF_BIRTH = "人口出生率(‰)";
+
+    public static final String PERCENTAGE_OF_DEATH = "人口死亡率(‰)";
 
     public static final String DATASOURCE_KEY_1 = "zb";
 
