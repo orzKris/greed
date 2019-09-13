@@ -54,15 +54,14 @@ public class MobileOperatorService implements DumpService {
     }
 
     @Override
-    public String dealQueryResult(JSONObject resultJson) {
+    public List<String> dealQueryResult(JSONObject resultJson) {
         String result = resultJson.toJSONString();
-        String operator;
+        List<String> resultList = new ArrayList<>();
         try {
-            operator = result.substring(result.indexOf(MobileOperatorConstant.BEGIN_STRING), result.indexOf(MobileOperatorConstant.END_STRING));
-            operator = operator.substring(9);
+            resultList.add(result.substring(result.indexOf(MobileOperatorConstant.BEGIN_STRING), result.indexOf(MobileOperatorConstant.END_STRING)).substring(9));
         } catch (Exception e) {
-            operator = MobileOperatorConstant.SPACE_NUMBER;
+            resultList.add(MobileOperatorConstant.SPACE_NUMBER);
         }
-        return operator;
+        return resultList;
     }
 }

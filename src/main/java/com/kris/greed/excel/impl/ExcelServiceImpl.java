@@ -96,22 +96,26 @@ public class ExcelServiceImpl implements ExcelService {
                 log.error("thread pool task error", e);
             }
             JSONObject resultJson = JSON.parseObject(result);
-            String finalResult = excelParamBean.getDumpService().dealQueryResult(resultJson);
+            List<String> finalResultList = excelParamBean.getDumpService().dealQueryResult(resultJson);
             HSSFRow row = sheet.getRow(i);
-            row.getCell(columnList.size() - 1, Row.CREATE_NULL_AS_BLANK).setCellValue(finalResult);
-            setLog(row, finalResult, columnList.size() - 1);
+            for (int m = 0; m < finalResultList.size(); m++) {
+                row.getCell(columnList.size() - finalResultList.size() + m, Row.CREATE_NULL_AS_BLANK).setCellValue(finalResultList.get(m));
+            }
+            setLog(row, finalResultList, columnList.size() - 1);
             i = i + 1;
         }
         toFile(workbook, excelParamBean.getFileName());
         log.info("cost: {} ms", (System.currentTimeMillis() - startTime));
     }
 
-    private void setLog(HSSFRow row, String finalResult, int size) {
+    private void setLog(HSSFRow row, List<String> finalResultList, int size) {
         StringBuilder logString = new StringBuilder();
         for (int i = 0; i < size; i++) {
             logString.append(row.getCell(i).getStringCellValue());
         }
-        log.info("{} : {}", logString.toString(), finalResult);
+        StringBuilder resultString = new StringBuilder();
+        finalResultList.forEach(result -> resultString.append(result + " "));
+        log.info("{} : {}", logString.toString(), resultString.toString());
     }
 
     private void toFile(HSSFWorkbook hssfWorkbook, String fileName) throws IOException {

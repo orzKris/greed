@@ -3,6 +3,7 @@ package com.kris.greed.model;
 import com.alibaba.fastjson.JSONObject;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * @author by Kris
@@ -18,5 +19,5 @@ public interface DumpService {
      * @param resultJson prophecy response
      * @return finalResult
      */
-    String dealQueryResult(JSONObject resultJson);
+    List<String> dealQueryResult(JSONObject resultJson);
 }

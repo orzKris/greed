@@ -29,4 +29,6 @@ public class ServiceCode {
 
     public static final String GDP = "地区生产总值";
 
+    public static final String REGIONAL_POPULATION = "地区人口";
+
 }

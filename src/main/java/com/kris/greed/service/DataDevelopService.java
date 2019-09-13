@@ -55,8 +55,10 @@ public class DataDevelopService implements DumpService {
     }
 
     @Override
-    public String dealQueryResult(JSONObject resultJson) {
-        return JSONPath.eval(resultJson, "$.result.jsonResult.count") + "";
+    public List<String> dealQueryResult(JSONObject resultJson) {
+        List<String> resultList = new ArrayList<>();
+        resultList.add(JSONPath.eval(resultJson, "$.result.jsonResult.count") + "");
+        return resultList;
     }
 
     private String getInterfaceId(Integer i) {

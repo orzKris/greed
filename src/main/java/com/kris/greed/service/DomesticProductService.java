@@ -55,18 +55,18 @@ public class DomesticProductService implements DumpService {
     }
 
     @Override
-    public String dealQueryResult(JSONObject resultJson) {
-        String product = "";
+    public List<String> dealQueryResult(JSONObject resultJson) {
+        List<String> resultList = new ArrayList<>();
         JSONArray array = (JSONArray) JSONPath.eval(resultJson, "$.result.jsonResult.result");
         for (int j = 0; j < array.size(); j++) {
             JSONObject json = array.getJSONObject(j);
             if (NationalDataConstant.DATASOURCE_VALUE_1.equals(json.get(NationalDataConstant.DATASOURCE_KEY_1))
                     || NationalDataConstant.DATASOURCE_VALUE_2.equals(json.get(NationalDataConstant.DATASOURCE_KEY_1))) {
-                product = (String) json.get(NationalDataConstant.DATASOURCE_KEY_2);
+                resultList.add((String) json.get(NationalDataConstant.DATASOURCE_KEY_2));
                 break;
             }
         }
-        return product;
+        return resultList;
     }
 
 }
