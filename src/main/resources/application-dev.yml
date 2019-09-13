@@ -21,3 +21,7 @@ com:
         fileName: 全国各地区生产总值
         sheetName: 地区生产总值
         year: 2016
+      nationalPopulation:
+        fileName: 全国各地区人口
+        sheetName: 地区人口
+        year: 2017

@@ -9,9 +9,13 @@ public final class NationalDataConstant {
 
     public static final String DOMESTIC_PRODUCT = "生产总值(亿元)";
 
+    public static final String NATIONAL_POPULATION = "人口";
+
     public static final String KEY = "key";
 
     public static final String SEARCH_PHRASE_1 = "地区生产总值";
+
+    public static final String SEARCH_PHRASE_2 = "人口";
 
     public static final String DATASOURCE_VALUE_1 = "国内生产总值(亿元)";
 
