@@ -21,6 +21,8 @@ public class ExcelParamBean {
 
     private LinkedHashMap<String, List<String>> paramMap;
 
+    private LinkedHashMap<String, List<String>> excelMap;
+
     private DumpService dumpService;
 
 }

@@ -36,22 +36,31 @@ public class NationalPopulationService implements DumpService {
     @Override
     public void dump() throws IOException {
         List<String> columnList = new ArrayList<>();
-        columnList.add(NationalDataConstant.YEAR_AREA_COLUMN);
+        columnList.add(NationalDataConstant.YEAR_COLUMN);
+        columnList.add(NationalDataConstant.AREA_COLUMN);
         columnList.add(NationalDataConstant.NATIONAL_POPULATION);
         columnList.add(NationalDataConstant.PERCENTAGE_OF_BIRTH);
         columnList.add(NationalDataConstant.PERCENTAGE_OF_DEATH);
         LinkedHashMap<String, List<String>> paramMap = new LinkedHashMap<>();
         String year = commonConfig.getNationalPopulation().getYear() + "";
         List<String> paramList = new ArrayList<>();
+        List<String> yearList = new ArrayList<>();
+        List<String> areaList = new ArrayList<>();
         for (int i = 0; i < NationalDataConstant.districtList.size(); i++) {
-            paramList.add(year + NationalDataConstant.districtList.get(i) + NationalDataConstant.SEARCH_PHRASE_2);
+            yearList.add(year);
+            areaList.add(NationalDataConstant.districtList.get(i));
+            paramList.add(year + NationalDataConstant.districtList.get(i) + NationalDataConstant.SEARCH_PHRASE_POPULATION);
         }
         paramMap.put(NationalDataConstant.KEY, paramList);
+        LinkedHashMap<String, List<String>> excelMap = new LinkedHashMap<>();
+        excelMap.put(NationalDataConstant.EXCEL_MAP_KEY_YEAR, yearList);
+        excelMap.put(NationalDataConstant.EXCEL_MAP_KEY_AREA, areaList);
         ExcelParamBean excelParamBean = ExcelParamBean.builder()
                 .fileName(commonConfig.getNationalPopulation().getYear() + commonConfig.getNationalPopulation().getFileName())
                 .sheetName(commonConfig.getNationalPopulation().getSheetName())
                 .serviceIdEnum(ServiceIdEnum.D006)
                 .columnList(columnList)
+                .excelMap(excelMap)
                 .paramMap(paramMap)
                 .dumpService(this)
                 .build();

@@ -52,7 +52,6 @@ public class ExcelServiceImpl implements ExcelService {
         HSSFSheet sheet = workbook.createSheet(excelParamBean.getSheetName());
         HSSFRow beginRow = sheet.createRow(0);
         List<String> columnList = excelParamBean.getColumnList();
-        LinkedHashMap<String, List<String>> paramMap = excelParamBean.getParamMap();
         //第一行属性名称,顺序从左到右
         for (int i = 0; i < columnList.size(); i++) {
             HSSFCell cell = beginRow.createCell(i);
@@ -60,7 +59,7 @@ public class ExcelServiceImpl implements ExcelService {
         }
         //写入参数
         int index = 0;
-        for (Map.Entry<String, List<String>> entry : paramMap.entrySet()) {
+        for (Map.Entry<String, List<String>> entry : excelParamBean.getExcelMap().entrySet()) {
             List<String> paramList = entry.getValue();
             for (int i = 1; i <= paramList.size(); i++) {
                 HSSFRow row;
@@ -75,13 +74,10 @@ public class ExcelServiceImpl implements ExcelService {
             index = index + 1;
         }
         //提交任务
-        for (int i = 1; i <= sheet.getLastRowNum(); i++) {
-            HSSFRow row = sheet.getRow(i);
+        for (int i = 0; i < sheet.getLastRowNum(); i++) {
             JSONObject paramJson = new JSONObject();
-            int j = 0;
-            for (Map.Entry<String, List<String>> entry : paramMap.entrySet()) {
-                paramJson.put(entry.getKey(), row.getCell(j).getStringCellValue());
-                j = j + 1;
+            for (Map.Entry<String, List<String>> entry : excelParamBean.getParamMap().entrySet()) {
+                paramJson.put(entry.getKey(), entry.getValue().get(i));
             }
             ProphecyCaller callable = new ProphecyCaller(paramJson, excelParamBean.getServiceIdEnum(), prophecyService);
             futureList.add(threadPool.submit(callable));

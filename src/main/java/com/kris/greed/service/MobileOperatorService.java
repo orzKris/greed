@@ -42,11 +42,13 @@ public class MobileOperatorService implements DumpService {
             paramList.add((long) (Math.random() * 10000000000L) + 10000000000L + "");
         }
         paramMap.put(MobileOperatorConstant.MOBILE, paramList);
+        LinkedHashMap<String, List<String>> excelMap = paramMap;
         ExcelParamBean excelParamBean = ExcelParamBean.builder()
                 .sheetName(commonConfig.getMobileOperator().getSheetName())
                 .fileName(commonConfig.getMobileOperator().getFileName())
                 .serviceIdEnum(ServiceIdEnum.D005)
                 .columnList(columnList)
+                .excelMap(excelMap)
                 .paramMap(paramMap)
                 .dumpService(this)
                 .build();

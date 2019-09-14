@@ -34,20 +34,29 @@ public class DomesticProductService implements DumpService {
     @Override
     public void dump() throws IOException {
         List<String> columnList = new ArrayList<>();
-        columnList.add(NationalDataConstant.YEAR_AREA_COLUMN);
+        columnList.add(NationalDataConstant.YEAR_COLUMN);
+        columnList.add(NationalDataConstant.AREA_COLUMN);
         columnList.add(NationalDataConstant.DOMESTIC_PRODUCT);
         LinkedHashMap<String, List<String>> paramMap = new LinkedHashMap<>();
         String year = commonConfig.getDomesticProduct().getYear() + "";
         List<String> paramList = new ArrayList<>();
+        List<String> yearList = new ArrayList<>();
+        List<String> areaList = new ArrayList<>();
         for (int i = 0; i < NationalDataConstant.districtList.size(); i++) {
-            paramList.add(year + NationalDataConstant.districtList.get(i) + NationalDataConstant.SEARCH_PHRASE_1);
+            yearList.add(year);
+            areaList.add(NationalDataConstant.districtList.get(i));
+            paramList.add(year + NationalDataConstant.districtList.get(i) + NationalDataConstant.SEARCH_PHRASE_PRODUCT);
         }
         paramMap.put(NationalDataConstant.KEY, paramList);
+        LinkedHashMap<String, List<String>> excelMap = new LinkedHashMap<>();
+        excelMap.put(NationalDataConstant.EXCEL_MAP_KEY_YEAR, yearList);
+        excelMap.put(NationalDataConstant.EXCEL_MAP_KEY_AREA, areaList);
         ExcelParamBean excelParamBean = ExcelParamBean.builder()
                 .fileName(commonConfig.getDomesticProduct().getYear() + commonConfig.getDomesticProduct().getFileName())
                 .sheetName(commonConfig.getDomesticProduct().getSheetName())
                 .serviceIdEnum(ServiceIdEnum.D006)
                 .columnList(columnList)
+                .excelMap(excelMap)
                 .paramMap(paramMap)
                 .dumpService(this)
                 .build();

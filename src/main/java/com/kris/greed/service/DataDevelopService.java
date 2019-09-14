@@ -43,11 +43,13 @@ public class DataDevelopService implements DumpService {
             paramList.add(getInterfaceId(i));
         }
         paramMap.put(DataDevelopConstant.INTERFACE_ID, paramList);
+        LinkedHashMap<String, List<String>> excelMap = paramMap;
         ExcelParamBean excelParamBean = ExcelParamBean.builder()
                 .sheetName(commonConfig.getDataDevelopment().getSheetName())
                 .fileName(commonConfig.getDataDevelopment().getFileName())
                 .serviceIdEnum(ServiceIdEnum.D000)
                 .columnList(columnList)
+                .excelMap(excelMap)
                 .paramMap(paramMap)
                 .dumpService(this)
                 .build();
