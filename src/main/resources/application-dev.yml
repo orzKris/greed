@@ -5,7 +5,7 @@ com:
   kris:
     greed:
       # File Path
-      filePath: /home/excel/
+      filePath: /usr/local/excel/
       # Request Url
       url: http://localhost:8888
 
