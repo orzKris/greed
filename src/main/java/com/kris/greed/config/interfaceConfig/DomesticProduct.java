@@ -9,5 +9,4 @@ public class DomesticProduct {
 
     private String sheetName;
 
-    private Integer year;
 }

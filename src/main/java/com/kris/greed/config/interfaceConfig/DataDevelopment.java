@@ -9,5 +9,4 @@ public class DataDevelopment {
 
     private String sheetName;
 
-    private Integer excelSize;
 }

@@ -4,17 +4,23 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONPath;
 import com.kris.greed.config.CommonConfig;
+import com.kris.greed.constant.DataDevelopConstant;
 import com.kris.greed.constant.NationalDataConstant;
+import com.kris.greed.enums.CommonConstant;
 import com.kris.greed.enums.ServiceCode;
 import com.kris.greed.enums.ServiceIdEnum;
 import com.kris.greed.excel.ExcelService;
 import com.kris.greed.model.DumpService;
 import com.kris.greed.model.ExcelParamBean;
+import com.kris.greed.model.Result;
+import com.kris.greed.utils.LogUtil;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -25,6 +31,8 @@ import java.util.*;
 @Component(ServiceCode.GDP)
 public class DomesticProductService implements DumpService {
 
+    private JSONObject paramJson;
+
     @Autowired
     private CommonConfig commonConfig;
 
@@ -32,13 +40,28 @@ public class DomesticProductService implements DumpService {
     private ExcelService excelService;
 
     @Override
-    public void dump() throws IOException {
+    public void init(JSONObject paramJson) {
+        this.paramJson = paramJson;
+    }
+
+    @Override
+    public Result checkParam(JSONObject paramJson) {
+        if (!StringUtils.isNumeric(paramJson.getString(NationalDataConstant.YEAR))) {
+            return Result.fail("year invalid !");
+        }
+        return Result.success();
+    }
+
+    @Override
+    public boolean dump() {
+        DateFormat df = new SimpleDateFormat(CommonConstant.DATE_FORMAT_DEFAULT);
+        String requestTime = df.format(new Date());
         List<String> columnList = new ArrayList<>();
         columnList.add(NationalDataConstant.YEAR_COLUMN);
         columnList.add(NationalDataConstant.AREA_COLUMN);
         columnList.add(NationalDataConstant.DOMESTIC_PRODUCT);
         LinkedHashMap<String, List<String>> paramMap = new LinkedHashMap<>();
-        String year = commonConfig.getDomesticProduct().getYear() + "";
+        String year = paramJson.getString(NationalDataConstant.YEAR);
         List<String> paramList = new ArrayList<>();
         List<String> yearList = new ArrayList<>();
         List<String> areaList = new ArrayList<>();
@@ -52,7 +75,7 @@ public class DomesticProductService implements DumpService {
         excelMap.put(NationalDataConstant.EXCEL_MAP_KEY_YEAR, yearList);
         excelMap.put(NationalDataConstant.EXCEL_MAP_KEY_AREA, areaList);
         ExcelParamBean excelParamBean = ExcelParamBean.builder()
-                .fileName(commonConfig.getDomesticProduct().getYear() + commonConfig.getDomesticProduct().getFileName())
+                .fileName(year + commonConfig.getDomesticProduct().getFileName())
                 .sheetName(commonConfig.getDomesticProduct().getSheetName())
                 .serviceIdEnum(ServiceIdEnum.D006)
                 .columnList(columnList)
@@ -60,7 +83,13 @@ public class DomesticProductService implements DumpService {
                 .paramMap(paramMap)
                 .dumpService(this)
                 .build();
-        excelService.excel(excelParamBean);
+        try {
+            excelService.excel(excelParamBean);
+            return true;
+        } catch (Exception e) {
+            LogUtil.logError(requestTime, "", "地区生产总值导出Excel失败", e);
+            return false;
+        }
     }
 
     @Override

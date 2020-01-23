@@ -5,17 +5,23 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONPath;
 import com.kris.greed.config.CommonConfig;
 import com.kris.greed.constant.NationalDataConstant;
+import com.kris.greed.enums.CommonConstant;
 import com.kris.greed.enums.ServiceCode;
 import com.kris.greed.enums.ServiceIdEnum;
 import com.kris.greed.excel.ExcelService;
 import com.kris.greed.model.DumpService;
 import com.kris.greed.model.ExcelParamBean;
+import com.kris.greed.model.Result;
+import com.kris.greed.utils.LogUtil;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -27,6 +33,8 @@ import java.util.List;
 @Component(ServiceCode.REGIONAL_POPULATION)
 public class NationalPopulationService implements DumpService {
 
+    private JSONObject paramJson;
+
     @Autowired
     private CommonConfig commonConfig;
 
@@ -34,7 +42,22 @@ public class NationalPopulationService implements DumpService {
     private ExcelService excelService;
 
     @Override
-    public void dump() throws IOException {
+    public void init(JSONObject paramJson) {
+        this.paramJson = paramJson;
+    }
+
+    @Override
+    public Result checkParam(JSONObject paramJson) {
+        if (!StringUtils.isNumeric(paramJson.getString(NationalDataConstant.YEAR))) {
+            return Result.fail("year invalid !");
+        }
+        return Result.success();
+    }
+
+    @Override
+    public boolean dump() {
+        DateFormat df = new SimpleDateFormat(CommonConstant.DATE_FORMAT_DEFAULT);
+        String requestTime = df.format(new Date());
         List<String> columnList = new ArrayList<>();
         columnList.add(NationalDataConstant.YEAR_COLUMN);
         columnList.add(NationalDataConstant.AREA_COLUMN);
@@ -42,7 +65,7 @@ public class NationalPopulationService implements DumpService {
         columnList.add(NationalDataConstant.PERCENTAGE_OF_BIRTH);
         columnList.add(NationalDataConstant.PERCENTAGE_OF_DEATH);
         LinkedHashMap<String, List<String>> paramMap = new LinkedHashMap<>();
-        String year = commonConfig.getNationalPopulation().getYear() + "";
+        String year = paramJson.getString(NationalDataConstant.YEAR);
         List<String> paramList = new ArrayList<>();
         List<String> yearList = new ArrayList<>();
         List<String> areaList = new ArrayList<>();
@@ -56,7 +79,7 @@ public class NationalPopulationService implements DumpService {
         excelMap.put(NationalDataConstant.EXCEL_MAP_KEY_YEAR, yearList);
         excelMap.put(NationalDataConstant.EXCEL_MAP_KEY_AREA, areaList);
         ExcelParamBean excelParamBean = ExcelParamBean.builder()
-                .fileName(commonConfig.getNationalPopulation().getYear() + commonConfig.getNationalPopulation().getFileName())
+                .fileName(year + commonConfig.getNationalPopulation().getFileName())
                 .sheetName(commonConfig.getNationalPopulation().getSheetName())
                 .serviceIdEnum(ServiceIdEnum.D006)
                 .columnList(columnList)
@@ -64,7 +87,13 @@ public class NationalPopulationService implements DumpService {
                 .paramMap(paramMap)
                 .dumpService(this)
                 .build();
-        excelService.excel(excelParamBean);
+        try {
+            excelService.excel(excelParamBean);
+            return true;
+        } catch (Exception e) {
+            LogUtil.logError(requestTime, "", "地区人口导出Excel失败", e);
+            return false;
+        }
     }
 
     @Override

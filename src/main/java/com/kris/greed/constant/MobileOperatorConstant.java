@@ -2,6 +2,8 @@ package com.kris.greed.constant;
 
 public final class MobileOperatorConstant {
 
+    public static final String EXCEL_SIZE = "excel_size";
+
     public static final String MOBILE_COLUMN = "手机号";
 
     public static final String OPERATOR_COLUMN = "运营商";

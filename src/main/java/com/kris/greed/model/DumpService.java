@@ -11,7 +11,20 @@ import java.util.List;
  */
 public interface DumpService {
 
-    void dump() throws IOException;
+    /**
+     * 初始化传参
+     */
+    void init(JSONObject paramJson);
+
+    /**
+     * 参数检查
+     */
+    Result checkParam(JSONObject paramJson);
+
+    /**
+     * 导出Excel
+     */
+    boolean dump() throws IOException;
 
     /**
      * callback method

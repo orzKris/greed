@@ -19,7 +19,7 @@ import java.util.Map;
  * @date 2019/08/20
  */
 @Log4j2
-@Component
+//@Component
 public class Runner implements ApplicationRunner {
 
     @Autowired

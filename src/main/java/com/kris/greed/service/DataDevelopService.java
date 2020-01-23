@@ -4,17 +4,24 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONPath;
 import com.kris.greed.config.CommonConfig;
 import com.kris.greed.constant.DataDevelopConstant;
+import com.kris.greed.constant.MobileOperatorConstant;
+import com.kris.greed.enums.CommonConstant;
 import com.kris.greed.enums.ServiceCode;
 import com.kris.greed.enums.ServiceIdEnum;
 import com.kris.greed.excel.ExcelService;
 import com.kris.greed.model.DumpService;
 import com.kris.greed.model.ExcelParamBean;
+import com.kris.greed.model.Result;
+import com.kris.greed.utils.LogUtil;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -26,6 +33,8 @@ import java.util.List;
 @Component(ServiceCode.DATA_DUMP)
 public class DataDevelopService implements DumpService {
 
+    private JSONObject paramJson;
+
     @Autowired
     private CommonConfig commonConfig;
 
@@ -33,27 +42,47 @@ public class DataDevelopService implements DumpService {
     private ExcelService excelService;
 
     @Override
-    public void dump() throws IOException {
+    public void init(JSONObject paramJson) {
+        this.paramJson = paramJson;
+    }
+
+    @Override
+    public Result checkParam(JSONObject paramJson) {
+        if (!StringUtils.isNumeric(paramJson.getString(DataDevelopConstant.EXCEL_SIZE))) {
+            return Result.fail("excel_size invalid !");
+        }
+        return Result.success();
+    }
+
+    @Override
+    public boolean dump() {
+        DateFormat df = new SimpleDateFormat(CommonConstant.DATE_FORMAT_DEFAULT);
+        String requestTime = df.format(new Date());
         List<String> columnList = new ArrayList<>();
         columnList.add(DataDevelopConstant.INTERFACE_COLUMN);
         columnList.add(DataDevelopConstant.INVOCATION_VOLUME);
         LinkedHashMap<String, List<String>> paramMap = new LinkedHashMap<>();
         List<String> paramList = new ArrayList<>();
-        for (int i = 1; i <= commonConfig.getDataDevelopment().getExcelSize(); i++) {
+        for (int i = 1; i <= paramJson.getInteger(DataDevelopConstant.EXCEL_SIZE); i++) {
             paramList.add(getInterfaceId(i));
         }
         paramMap.put(DataDevelopConstant.INTERFACE_ID, paramList);
-        LinkedHashMap<String, List<String>> excelMap = paramMap;
         ExcelParamBean excelParamBean = ExcelParamBean.builder()
                 .sheetName(commonConfig.getDataDevelopment().getSheetName())
                 .fileName(commonConfig.getDataDevelopment().getFileName())
                 .serviceIdEnum(ServiceIdEnum.D000)
                 .columnList(columnList)
-                .excelMap(excelMap)
+                .excelMap(paramMap)
                 .paramMap(paramMap)
                 .dumpService(this)
                 .build();
-        excelService.excel(excelParamBean);
+        try {
+            excelService.excel(excelParamBean);
+            return true;
+        } catch (Exception e) {
+            LogUtil.logError(requestTime, "", "大数据输出统计数据导出Excel失败", e);
+            return false;
+        }
     }
 
     @Override

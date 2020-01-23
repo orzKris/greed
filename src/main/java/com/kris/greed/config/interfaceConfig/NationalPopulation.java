@@ -9,5 +9,4 @@ public class NationalPopulation {
 
     private String sheetName;
 
-    private Integer year;
 }

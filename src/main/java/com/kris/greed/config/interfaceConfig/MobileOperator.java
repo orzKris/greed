@@ -9,5 +9,4 @@ public class MobileOperator {
 
     private String sheetName;
 
-    private Integer excelSize;
 }

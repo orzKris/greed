@@ -5,6 +5,8 @@ import java.util.List;
 
 public final class NationalDataConstant {
 
+    public static final String YEAR= "year";
+
     public static final String YEAR_COLUMN = "年份";
 
     public static final String AREA_COLUMN = "地区";
