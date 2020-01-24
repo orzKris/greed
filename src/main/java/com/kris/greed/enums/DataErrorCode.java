@@ -1,14 +1,11 @@
 package com.kris.greed.enums;
 
-
-import com.kris.greed.model.common.exception.ErrorCode;
-
 /**
  * @author Kris
  * @date 2019/4/15
  */
 @SuppressWarnings("all")
-public enum DataErrorCode implements ErrorCode {
+public enum DataErrorCode {
 
     SUCCESS("00", "成功"),
     FAIL("20000001", "失败"),
@@ -24,12 +21,10 @@ public enum DataErrorCode implements ErrorCode {
         this.errorMsg = errorMsg;
     }
 
-    @Override
     public String getCode() {
         return code;
     }
 
-    @Override
     public String getErrorMsg() {
         return errorMsg;
     }

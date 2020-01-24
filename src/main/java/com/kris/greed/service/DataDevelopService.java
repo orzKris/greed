@@ -6,6 +6,7 @@ import com.kris.greed.config.CommonConfig;
 import com.kris.greed.constant.DataDevelopConstant;
 import com.kris.greed.constant.MobileOperatorConstant;
 import com.kris.greed.enums.CommonConstant;
+import com.kris.greed.enums.DataErrorCode;
 import com.kris.greed.enums.ServiceCode;
 import com.kris.greed.enums.ServiceIdEnum;
 import com.kris.greed.excel.ExcelService;
@@ -55,7 +56,7 @@ public class DataDevelopService implements DumpService {
     }
 
     @Override
-    public boolean dump() {
+    public Result dump() {
         DateFormat df = new SimpleDateFormat(CommonConstant.DATE_FORMAT_DEFAULT);
         String requestTime = df.format(new Date());
         List<String> columnList = new ArrayList<>();
@@ -67,9 +68,11 @@ public class DataDevelopService implements DumpService {
             paramList.add(getInterfaceId(i));
         }
         paramMap.put(DataDevelopConstant.INTERFACE_ID, paramList);
+        DateFormat dateFormat = new SimpleDateFormat(CommonConstant.DATE_FORMAT);
+        String fileTime = dateFormat.format(new Date());
         ExcelParamBean excelParamBean = ExcelParamBean.builder()
                 .sheetName(commonConfig.getDataDevelopment().getSheetName())
-                .fileName(commonConfig.getDataDevelopment().getFileName())
+                .fileName(commonConfig.getDataDevelopment().getFileName() + fileTime + ".xls")
                 .serviceIdEnum(ServiceIdEnum.D000)
                 .columnList(columnList)
                 .excelMap(paramMap)
@@ -77,11 +80,11 @@ public class DataDevelopService implements DumpService {
                 .dumpService(this)
                 .build();
         try {
-            excelService.excel(excelParamBean);
-            return true;
+            JSONObject resultJson = excelService.excel(excelParamBean);
+            return new Result(DataErrorCode.SUCCESS, resultJson);
         } catch (Exception e) {
             LogUtil.logError(requestTime, "", "大数据输出统计数据导出Excel失败", e);
-            return false;
+            return new Result(DataErrorCode.FAIL);
         }
     }
 

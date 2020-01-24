@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONPath;
 import com.kris.greed.config.CommonConfig;
 import com.kris.greed.constant.NationalDataConstant;
 import com.kris.greed.enums.CommonConstant;
+import com.kris.greed.enums.DataErrorCode;
 import com.kris.greed.enums.ServiceCode;
 import com.kris.greed.enums.ServiceIdEnum;
 import com.kris.greed.excel.ExcelService;
@@ -55,7 +56,7 @@ public class NationalPopulationService implements DumpService {
     }
 
     @Override
-    public boolean dump() {
+    public Result dump() {
         DateFormat df = new SimpleDateFormat(CommonConstant.DATE_FORMAT_DEFAULT);
         String requestTime = df.format(new Date());
         List<String> columnList = new ArrayList<>();
@@ -88,11 +89,11 @@ public class NationalPopulationService implements DumpService {
                 .dumpService(this)
                 .build();
         try {
-            excelService.excel(excelParamBean);
-            return true;
+            JSONObject resultJson = excelService.excel(excelParamBean);
+            return new Result(DataErrorCode.SUCCESS, resultJson);
         } catch (Exception e) {
             LogUtil.logError(requestTime, "", "地区人口导出Excel失败", e);
-            return false;
+            return new Result(DataErrorCode.FAIL);
         }
     }
 

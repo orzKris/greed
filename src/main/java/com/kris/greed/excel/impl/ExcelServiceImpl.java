@@ -45,7 +45,7 @@ public class ExcelServiceImpl implements ExcelService {
     private static ExecutorService threadPool = Executors.newFixedThreadPool(200);
 
     @Override
-    public void excel(ExcelParamBean excelParamBean) throws IOException {
+    public JSONObject excel(ExcelParamBean excelParamBean) throws IOException {
         long startTime = System.currentTimeMillis();
         List<Future> futureList = new ArrayList<>();
         HSSFWorkbook workbook = new HSSFWorkbook();
@@ -100,8 +100,11 @@ public class ExcelServiceImpl implements ExcelService {
             setLog(row, finalResultList, columnList.size() - finalResultList.size());
             i = i + 1;
         }
-        toFile(workbook, excelParamBean.getFileName());
+//        toFile(workbook, excelParamBean.getFileName());
+        JSONObject finalResult = new JSONObject();
+        finalResult.put(excelParamBean.getFileName(), workbook);
         log.info("cost: {} ms", (System.currentTimeMillis() - startTime));
+        return finalResult;
     }
 
     private void setLog(HSSFRow row, List<String> finalResultList, int size) {

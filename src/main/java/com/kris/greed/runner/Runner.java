@@ -20,6 +20,7 @@ import java.util.Map;
  */
 @Log4j2
 //@Component
+@Deprecated
 public class Runner implements ApplicationRunner {
 
     @Autowired

@@ -10,4 +10,6 @@ public class CommonConstant {
 
     public static final String DATE_FORMAT_DEFAULT = "yyyy-MM-dd HH:mm:ss";
 
+    public static final String DATE_FORMAT = "yyyyMMdd";
+
 }

@@ -1,5 +1,6 @@
 package com.kris.greed.excel;
 
+import com.alibaba.fastjson.JSONObject;
 import com.kris.greed.model.ExcelParamBean;
 
 import java.io.IOException;
@@ -10,6 +11,6 @@ import java.io.IOException;
  */
 public interface ExcelService {
 
-    void excel(ExcelParamBean excelParamBean) throws IOException;
+    JSONObject excel(ExcelParamBean excelParamBean) throws IOException;
 
 }
