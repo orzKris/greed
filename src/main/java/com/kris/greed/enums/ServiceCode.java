@@ -31,4 +31,6 @@ public class ServiceCode {
 
     public static final String REGIONAL_POPULATION = "地区人口";
 
+    public static final String TAO_BAO_BEAUTY = "淘女郎查询";
+
 }

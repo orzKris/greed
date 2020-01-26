@@ -24,7 +24,7 @@ public interface DumpService {
     /**
      * 导出Excel
      */
-    Result dump() throws IOException;
+    Result dump();
 
     /**
      * callback method

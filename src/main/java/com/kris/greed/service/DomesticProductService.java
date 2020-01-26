@@ -76,7 +76,7 @@ public class DomesticProductService implements DumpService {
         excelMap.put(NationalDataConstant.EXCEL_MAP_KEY_YEAR, yearList);
         excelMap.put(NationalDataConstant.EXCEL_MAP_KEY_AREA, areaList);
         ExcelParamBean excelParamBean = ExcelParamBean.builder()
-                .fileName(year + commonConfig.getDomesticProduct().getFileName())
+                .fileName(year + commonConfig.getDomesticProduct().getFileName() + ".xls")
                 .sheetName(commonConfig.getDomesticProduct().getSheetName())
                 .serviceIdEnum(ServiceIdEnum.D006)
                 .columnList(columnList)

@@ -1,9 +1,6 @@
 package com.kris.greed.config;
 
-import com.kris.greed.config.interfaceConfig.DataDevelopment;
-import com.kris.greed.config.interfaceConfig.DomesticProduct;
-import com.kris.greed.config.interfaceConfig.MobileOperator;
-import com.kris.greed.config.interfaceConfig.NationalPopulation;
+import com.kris.greed.config.interfaceConfig.*;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -28,5 +25,7 @@ public class CommonConfig {
     private DomesticProduct domesticProduct;
 
     private NationalPopulation nationalPopulation;
+
+    private TaoBaoBeauty taobaoBeauty;
 
 }

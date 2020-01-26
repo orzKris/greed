@@ -80,7 +80,7 @@ public class NationalPopulationService implements DumpService {
         excelMap.put(NationalDataConstant.EXCEL_MAP_KEY_YEAR, yearList);
         excelMap.put(NationalDataConstant.EXCEL_MAP_KEY_AREA, areaList);
         ExcelParamBean excelParamBean = ExcelParamBean.builder()
-                .fileName(year + commonConfig.getNationalPopulation().getFileName())
+                .fileName(year + commonConfig.getNationalPopulation().getFileName() + ".xls")
                 .sheetName(commonConfig.getNationalPopulation().getSheetName())
                 .serviceIdEnum(ServiceIdEnum.D006)
                 .columnList(columnList)

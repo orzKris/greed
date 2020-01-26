@@ -21,3 +21,6 @@ com:
       nationalPopulation:
         fileName: 全国各地区人口
         sheetName: 地区人口
+      taobaoBeauty:
+        fileName: 淘女郎列表
+        sheetName: 淘女郎列表

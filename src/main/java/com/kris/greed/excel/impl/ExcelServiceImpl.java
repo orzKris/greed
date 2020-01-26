@@ -73,7 +73,7 @@ public class ExcelServiceImpl implements ExcelService {
             }
             index = index + 1;
         }
-        //提交任务
+        //提交任务，嵌套循环实现了多参数请求
         for (int i = 0; i < sheet.getLastRowNum(); i++) {
             JSONObject paramJson = new JSONObject();
             for (Map.Entry<String, List<String>> entry : excelParamBean.getParamMap().entrySet()) {
@@ -82,7 +82,7 @@ public class ExcelServiceImpl implements ExcelService {
             ProphecyCaller callable = new ProphecyCaller(paramJson, excelParamBean.getServiceIdEnum(), prophecyService);
             futureList.add(threadPool.submit(callable));
         }
-        //写入结果
+        //写入结果，得到一个写入一个
         int i = 1;
         for (Future future : futureList) {
             String result = null;

@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONPath;
 import com.kris.greed.config.CommonConfig;
 import com.kris.greed.constant.DataDevelopConstant;
-import com.kris.greed.constant.MobileOperatorConstant;
 import com.kris.greed.enums.CommonConstant;
 import com.kris.greed.enums.DataErrorCode;
 import com.kris.greed.enums.ServiceCode;
@@ -89,7 +88,7 @@ public class DataDevelopService implements DumpService {
     }
 
     @Override
-    public List<String> dealQueryResult(JSONObject resultJson) {
+    public List<String > dealQueryResult(JSONObject resultJson) {
         List<String> resultList = new ArrayList<>();
         resultList.add(JSONPath.eval(resultJson, "$.result.jsonResult.count") + "");
         return resultList;
