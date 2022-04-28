@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.log4j.Log4j2;
 import okhttp3.*;
-import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -15,9 +14,8 @@ import org.springframework.stereotype.Component;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -54,10 +52,8 @@ public class DumpData {
 
     private static ExecutorService threadPool = Executors.newFixedThreadPool(200);
 
-    public void dump() throws IOException {
+    public void dump() throws IOException, ParseException {
         long start = System.currentTimeMillis();
-        DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-        String requestTime = dateFormat.format(new Date());
         Request request = getTokenRequest();
         Call call = new OkHttpClient.Builder().callTimeout(10000, TimeUnit.MILLISECONDS).build().newCall(request);
         Response response = call.execute();
@@ -66,6 +62,13 @@ public class DumpData {
         List<Future> futureList = new ArrayList<>();
         HSSFWorkbook workbook = new HSSFWorkbook(new FileInputStream("C:\\Users\\Administrator\\Desktop\\车辆当天市民卡全部乘车记录.xls"));
         HSSFSheet sheet = workbook.getSheetAt(0);
+        //设置表头
+        sheet.getRow(0).getCell(0, Row.CREATE_NULL_AS_BLANK).setCellValue("交易时间");
+        sheet.getRow(0).getCell(1, Row.CREATE_NULL_AS_BLANK).setCellValue("车牌");
+        sheet.getRow(0).getCell(2, Row.CREATE_NULL_AS_BLANK).setCellValue("公交线路");
+        sheet.getRow(0).getCell(3, Row.CREATE_NULL_AS_BLANK).setCellValue("卡号");
+        sheet.getRow(0).getCell(6, Row.CREATE_NULL_AS_BLANK).setCellValue("姓名");
+        sheet.getRow(0).getCell(7, Row.CREATE_NULL_AS_BLANK).setCellValue("身份证号");
 
         for (int i = 1; i <= sheet.getLastRowNum(); i++) {
             HSSFRow row = sheet.getRow(i);
@@ -97,7 +100,12 @@ public class DumpData {
             log.info("{} : {}", sheet.getRow(i).getCell(6).getStringCellValue(), sheet.getRow(i).getCell(7).getStringCellValue());
             i = i + 1;
         }
-        FileOutputStream fileOutputStream = new FileOutputStream("C:\\Users\\Administrator\\Desktop\\车辆当天市民卡全部乘车记录" + requestTime + ".xls");
+        DateFormat dateFormat = new SimpleDateFormat("M月d日");
+        Date date = sheet.getRow(1).getCell(0).getDateCellValue();
+        String busLine = sheet.getRow(1).getCell(2).getStringCellValue();
+        String busId = sheet.getRow(1).getCell(1).getStringCellValue();
+        String requestTime= dateFormat.format(date);
+        FileOutputStream fileOutputStream = new FileOutputStream("C:\\Users\\Administrator\\Desktop\\" + requestTime + busLine + "路公交" + busId + "市民卡乘车人员身份信息" + ".xls");
         workbook.write(fileOutputStream);
         fileOutputStream.flush();
         fileOutputStream.close();
