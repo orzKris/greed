@@ -1,11 +1,13 @@
-# Excel Size
-excelSize: 100
 
 # File Path
 filePath: /home/excel/
 
 # Request Url
-url: http://localhost:8888
+url: https://api-dshare.wenzhou.gov.cn/webapi2
+tokenPath: /get_token
+apiPath: /MxOyNjRcX77XK8tkemzOQ
+name: lxx.scsz
+password: aad0ef78-932a-11ec-860b-00163e010604
 
 logging:
   config: classpath:log4j2-dev.xml
