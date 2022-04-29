@@ -7,7 +7,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.text.ParseException;
 
 /**
  * @author by Kris
@@ -21,7 +20,7 @@ public class Task {
     private DumpData dumpData;
 
     @Scheduled(cron = "0 0 12 * * ?")
-    private void scheduledTask() throws IOException, ParseException {
+    private void scheduledTask() throws IOException {
         log.info("SCHEDULED TASK BEGIN----------");
         dumpData.dump();
     }
